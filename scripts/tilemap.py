@@ -10,16 +10,16 @@ class Tilemap:
         self.tilemap = {}
         self.offgrid_tiles = []
 
-        for i in range(10):
-            self.tilemap[f'{3+i};10'] = {'type':'grass', 'variant':1, 'pos':(3+i,10)}
-            self.tilemap[f'10;{5+i}'] = {'type':'stone', 'variant':1, 'pos':(10,5+i)}
+        #for i in range(10):
+        #    self.tilemap[f'{3+i};10'] = {'type':'grass', 'variant':1, 'pos':(3+i,10)}
+        #    self.tilemap[f'10;{5+i}'] = {'type':'stone', 'variant':1, 'pos':(10,5+i)}
             
     
     def tiles_around(self, pos):
         tiles = []
         tile_loc = (int(pos[0] // self.tile_size), int(pos[1] // self.tile_size))
         for offset in NEIGHBORS_OFFSETS:
-            check_loc = str(tile_loc[0] + offset[0]) + ';' + str(tile_loc[1] + offset[1])
+            check_loc = f"{tile_loc[0] + offset[0]};{tile_loc[1] + offset[1]}"
             if check_loc in self.tilemap:
                 tiles.append(self.tilemap[check_loc])
         return tiles
