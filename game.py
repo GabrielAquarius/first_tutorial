@@ -39,7 +39,7 @@ class Game:
         
         self.tilemap = Tilemap(self, tile_size=16)
         
-        self.scroll = [0,0]
+        self.scroll = [0.0, 0.0]
         
     def run(self):
         while True:
