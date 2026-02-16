@@ -54,17 +54,24 @@ class Tilemap:
         return tiles
     
     def save(self, path):
-        file = open(path, 'w')
-        json.dump({'tilemap': self.tilemap, 'tile_size': self.tile_size, 'offgrid':self.offgrid_tiles}, file)
-        file.close()
+        with open(path, 'w') as file:
+            json.dump({'tilemap': self.tilemap, 'tile_size': self.tile_size, 'offgrid':self.offgrid_tiles}, file)
         
     def load(self, path):
-        file = open(path, 'r')
-        map_data = json.load(file)
-        self.tilemap = map_data['tilemap']
-        self.tile_size = map_data['tile_size']
-        self.offgrid_tiles = map_data['offgrid']
+        with open(path, 'r') as file:
+            map_data = json.load(file)
+            self.tilemap = map_data['tilemap']
+            self.tile_size = map_data['tile_size']
+            self.offgrid_tiles = map_data['offgrid']
+                
     
+    def solid_check(self, pos):
+        tile_loc = f'{int(pos[0] // self.tile_size)};{int(pos[1] // self.tile_size)}' 
+        if tile_loc in self.tilemap:
+            if self.tilemap[tile_loc]['type'] in PHYSICS_TILES:
+                return self.tilemap[tile_loc]
+        
+        
     def physics_rects_around(self, pos):
         rects = []
         for tile in self.tiles_around(pos):
