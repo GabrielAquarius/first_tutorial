@@ -22,9 +22,9 @@ pip install -U pyinstaller
 
 Open a terminal **in the root directory of the project** (where `game.py` is located), then run one of the commands below depending on your system/shell.
 
-#### Windows or Linux
+#### Windows (PowerShell / Command Prompt) or Linux (Bash)
 
-``` PowerShell / Command Prompt / Bash
+```bash
 pyinstaller game.py --noconsole --onefile
 ```
 
