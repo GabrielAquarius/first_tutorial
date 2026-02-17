@@ -1,3 +1,4 @@
+import os
 import sys
 import random
 import math
@@ -50,7 +51,10 @@ class Game:
         
         self.tilemap = Tilemap(self, tile_size=16)
         
-        self.load_level(0)
+        self.level = 0
+        self.load_level(self.level)
+        
+        self.screenshake = 0
     
     def load_level(self, map_id):
         self.tilemap.load(f'assets/maps/{map_id}.json')
@@ -63,6 +67,7 @@ class Game:
         for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
             if spawner['variant'] == 0:
                 self.player.pos = spawner['pos']
+                self.player.air_time = 0
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
         
@@ -71,10 +76,29 @@ class Game:
         self.sparks = []
 
         self.scroll = [0.0, 0.0]
+        self.dead = 0
+        self.transition = -30
     
     def run(self):
         while True:
             self.display.blit(self.assets['background'], (0,0))
+            
+            self.screenshake = max(0, self.screenshake - 1)
+            
+            if not len(self.enemies):
+                self.transition += 1
+                if self.transition > 30:
+                    self.level = min(self.level + 1, len(os.listdir('assets/maps')) - 1)
+                    self.load_level(self.level)
+            if self.transition < 0:
+                self.transition += 1
+            
+            if self.dead:
+                self.dead += 1
+                if self.dead >= 10:
+                    self.transition = min(30, self.transition + 1)
+                if self.dead > 40:
+                    self.load_level(self.level)
             
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 30 # Divinding by 30, it will take 130th of whatever distance there is remaining to the center and apply that instead of the whole thing. So the further the player is, the faster it will move and as it gets closer it'll slow down, because that distance shrinks.
             self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 30
@@ -95,9 +119,10 @@ class Game:
                 enemy.render(self.display, offset=render_scroll)
                 if kill:
                     self.enemies.remove(enemy) 
-                
-            self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
-            self.player.render(self.display, offset=render_scroll)
+           
+            if not self.dead:
+                self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
+                self.player.render(self.display, offset=render_scroll)
             
             # [[x, y], direction, timer]
             for projectile in self.projectiles.copy():
@@ -114,6 +139,8 @@ class Game:
                 elif abs(self.player.dashing) < 50:
                     if self.player.rect().collidepoint(projectile[0]):
                         self.projectiles.remove(projectile)
+                        self.dead += 1
+                        self.screenshake = max(16, self.screenshake)
                         for i in range(30):
                             angle = random.random() * math.pi * 2
                             speed = random.random() * 5
@@ -152,8 +179,15 @@ class Game:
                         self.movement[0] = False
                     if event.key == pygame.K_RIGHT:
                         self.movement[1] = False
-                 
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()))   
+            
+            if self.transition:
+                transition_surf = pygame.Surface(self.display.get_size())
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 8)
+                transition_surf.set_colorkey((255, 255, 255))
+                self.display.blit(transition_surf, (0, 0))
+                
+            screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), screenshake_offset)   
             pygame.display.update()
             self.clock.tick(60)
 
