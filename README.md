@@ -1,5 +1,3 @@
-### README
-
 ## About this repository
 
 This repository contains the **first game I coded using Pygame**, built by following **DaFluffyPotato’s tutorial**.
