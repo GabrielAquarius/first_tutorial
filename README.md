@@ -22,21 +22,9 @@ pip install -U pyinstaller
 
 Open a terminal **in the root directory of the project** (where `game.py` is located), then run one of the commands below depending on your system/shell.
 
-#### PowerShell (Windows)
+#### Windows or Linux
 
-```powershell
-pyinstaller game.py --noconsole --onefile
-```
-
-#### Command Prompt (Windows)
-
-```bat
-pyinstaller game.py --noconsole --onefile
-```
-
-#### Linux (bash)
-
-```bash
+``` PowerShell / Command Prompt / Bash
 pyinstaller game.py --noconsole --onefile
 ```
 
@@ -46,17 +34,15 @@ After running, PyInstaller will generate folders like `build/` and `dist/`, plus
 
 To ensure the packaged game runs correctly, copy the following into the `dist` folder (next to the generated executable):
 
-- `Assets/`
-- `Scripts/`
-- `Pasta/`
+- `assets/`
+- `scripts/`
 
 Your `dist/` folder should end up looking roughly like this:
 
 - `dist/`
   - `game` (Linux) or `game.exe` (Windows)
-  - `Assets/`
-  - `Scripts/`
-  - `Pasta/`
+  - `assets/`
+  - `scripts/`
 
 ### 4) Run the game
 
